@@ -21,18 +21,8 @@ The newsletter registrations made with blocknewsletter form are handled by the m
 
 Open modules/blocknewsletter/blocknewsletter.php and replace the original registerUser() with the one provided below. Ideally, you'd like to create a copy of the original blocknewsletter module and work on it because each automatic update is going to destroy your changes.
 
-
     protected function registerUser($email)
     {
-    	$sql = 'UPDATE '._DB_PREFIX_.'customer
-    			SET `newsletter` = 1, newsletter_date_add = NOW(), `ip_registration_newsletter` = \''.pSQL(Tools::getRemoteAddr()).'\'
-    			WHERE `email` = \''.pSQL($email).'\'
-    			AND id_shop = '.$this->context->shop->id;
-    
-    	if (!Db::getInstance()->execute($sql)) {
-    		return false;
-    	}
-    
     	$customers = new Customer();
     	$find_customer = $customers->getByEmail( $email );
     
@@ -40,9 +30,14 @@ Open modules/blocknewsletter/blocknewsletter.php and replace the original regist
     		return false;
     	}
     
-    	return ( $find_customer->update(true) );
+    	$find_customer->newsletter = 1;
+    	$find_customer->newsletter_date_add = date('Y-m-d H:i:s');
+    	$find_customer->ip_registration_newsletter = pSQL( Tools::getRemoteAddr() );
     
+    	return ( $find_customer->update(true) );
     }
 
+Authors
+-------
 
-Authors: http://www.bazingadesigns.com/en
+Greg @ http://www.bazingadesigns.com/en | grzegorz.karol.jasinski@gmail.com
