@@ -14,10 +14,12 @@ Installation
 Download the ZIP and unpack the groobyster folder to your Prestashop /modules directory. After installing and activating the module, create a special users group and pick it on Groobyster's configuration page.
 
 
-Advanced installation
----------------------
+Making blocknewsletter module work with groobyster
+--------------------------------------------------
 
-If you'd like to update the user's group when they are registering using the blocknewsletter form, you'll have to edit the blocknewsletter.php file and replace the original registerUser function with this one:
+The newsletter registrations made with blocknewsletter form are handled by the module's own method called registerUser() . We cannot hook into it from outside and update the user's group like we do during normal user's update and creation so in order to fill the missing scenario we need to change this method a bit. 
+
+Open modules/blocknewsletter/blocknewsletter.php and replace the original registerUser() with the one provided below. Ideally, you'd like to create a copy of the original blocknewsletter module and work on it because each automatic update is going to destroy your changes.
 
 
     protected function registerUser($email)
