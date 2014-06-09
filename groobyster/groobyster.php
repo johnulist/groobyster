@@ -18,8 +18,8 @@ class Groobyster extends Module {
 		
 		parent::__construct();	
 
-		$this->displayName = $this->l('Add to special group');
-		$this->description = $this->l('This module adds users who opted for newsletter to a special discount group.');		
+		$this->displayName = $this->l( 'Add to special group' );
+		$this->description = $this->l( 'This module adds users who opted for newsletter to a special discount group.' );
 
 	}
 
@@ -100,7 +100,7 @@ class Groobyster extends Module {
 
 		);
 
-		if (isset($this->form_errors) && count($this->form_errors)) {
+		if ( isset( $this->form_errors ) && count( $this->form_errors ) ) {
 
 			return $this->displayError( implode( '<br />', $this->form_errors ) ) . $helper->generateForm( array( $fields_form ) );
 		}
@@ -142,11 +142,22 @@ class Groobyster extends Module {
 	}
 
 	/*
-	* @ Runs before every account creation to ensure user gets to
-	* @ the appropiate group: either "customer" or the special newsletter group
+	-----------------------------------------------------------------------------------------
+	@ > Runs before every account creation to ensure user gets to
+	@ > the appropiate group: either "customer" or the special newsletter group
+	@ > Execute the hook only if we're in front-office
+	@ > to let the admins do what they want with the users
+	-----------------------------------------------------------------------------------------
 	*/
 
 	public function hookActionObjectCustomerAddBefore( $params ) {
+
+		$context = Context::getContext();
+		$controller = get_class( $context->controller );
+
+		if ( $controller == 'AdminCustomersController' ) {
+			return;
+		}
 
 		$customer = $params[ 'object' ];
 		$special_group = Configuration::get( 'GROOBYSTER_GROUP_ID' );
@@ -158,12 +169,23 @@ class Groobyster extends Module {
 		}
 	}
 
-	/*
-	* @ Runs before every customer account update to check if he
-	* @ changed his/her mind and enabled/disabled the newsletter subscription
-	*/
 
+	/*
+	-----------------------------------------------------------------------------------------
+	@ > Runs before every customer account update to check if they
+	@ > changed his/her mind and enabled/disabled the newsletter subscription
+	@ > 
+	-----------------------------------------------------------------------------------------
+	*/
+	
 	public function hookActionObjectCustomerUpdateBefore( $params ) {
+
+		$context = Context::getContext();
+		$controller = get_class( $context->controller );
+
+		if ( $controller == 'AdminCustomersController' ) {
+			return;
+		}
 
 		$customer = $params[ 'object' ];
 		$discount_group = Configuration::get( 'GROOBYSTER_GROUP_ID' );
